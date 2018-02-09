@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Watchable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +18,13 @@ public class InformeOCRDocGeo {
     public static void main(String[] args) {
 
 	    String ruta = getDirectory();
-	    File dir = new File(ruta); 
+	    walk(ruta);
+	    
+	    /*
+	     File dir = new File(ruta); 
+	     
 	    List<String> listFich = arrayToList(dir.list());		// Lista que almacenara los fciheros/carpetas
- 
+	    dir.lis
 	    String rutaTMP = ruta;
     		File file_tmp = null;
 	    	for (int i=0 ; i < listFich.size() ; i++) {
@@ -29,7 +34,7 @@ public class InformeOCRDocGeo {
 	    		if(file_tmp.isDirectory()) {
 	    			System.out.println(file_tmp.getName() + " --> Es Carpeta");
 	    			String tmpArray[] = file_tmp.list();
-	    			//rutaTMP = rutaTMP + "/" + listFich.get(i).toString();
+	    			rutaTMP = rutaTMP + "/" + listFich.get(i).toString();
 	    			for (int j = 0; j < tmpArray.length; j++) {
 					listFich.add(tmpArray[j]);
 				}
@@ -39,6 +44,7 @@ public class InformeOCRDocGeo {
 	    		}
 	    		
 	    	}
+	    	*/
 	    
     }
     
@@ -51,6 +57,24 @@ public class InformeOCRDocGeo {
     		} 
     		
     		return lista;
+    }
+    
+    public static void walk( String path ) {
+
+        File root = new File( path );
+        File[] list = root.listFiles();
+
+        if (list == null) return;
+
+        for ( File f : list ) {
+            if ( f.isDirectory() ) {
+                walk( f.getAbsolutePath() );
+                System.out.println( "Dir:" + f.getAbsoluteFile() );
+            }
+            else {
+                System.out.println( "File:" + f.getAbsoluteFile() );
+            }
+        }
     }
     
     // Lanza el panel de seleccion de directorio
