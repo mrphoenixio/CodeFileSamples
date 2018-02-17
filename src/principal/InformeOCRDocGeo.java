@@ -1,16 +1,8 @@
 package principal;
-import java.awt.Component;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.file.Watchable;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
+import java.awt.Component;
+import java.io.File;
+
 import javax.swing.JFileChooser;
 
 public class InformeOCRDocGeo {
@@ -18,82 +10,81 @@ public class InformeOCRDocGeo {
     public static void main(String[] args) {
 
 	    String ruta = getDirectory();
-	    walk(ruta);
-	    
-	    /*
-	     File dir = new File(ruta); 
-	     
-	    List<String> listFich = arrayToList(dir.list());		// Lista que almacenara los fciheros/carpetas
-	    dir.lis
-	    String rutaTMP = ruta;
-    		File file_tmp = null;
-	    	for (int i=0 ; i < listFich.size() ; i++) {
-	    		
-	    		file_tmp = new File(rutaTMP + "/" + listFich.get(i).toString());
-
-	    		if(file_tmp.isDirectory()) {
-	    			System.out.println(file_tmp.getName() + " --> Es Carpeta");
-	    			String tmpArray[] = file_tmp.list();
-	    			rutaTMP = rutaTMP + "/" + listFich.get(i).toString();
-	    			for (int j = 0; j < tmpArray.length; j++) {
-					listFich.add(tmpArray[j]);
-				}
-	    			
-	    		}else {
-	    			System.out.println(file_tmp.getName());
-	    		}
-	    		
-	    	}
-	    	*/
+	    listDirectoryRec(ruta);
+	    searchFileOrDirectory(ruta,"CursoPython");
 	    
     }
     
-    private static List<String> arrayToList(String array[]){
+    // Search a file or directory in a directory
+    public static boolean searchFileOrDirectory ( String path, String searched ) {
     		
-    		List<String> lista = new ArrayList<String>();
+    		File[] list = new File( path ).listFiles();
     		
-    		for (int i = 0; i < array.length; i++) {
-    			lista.add(array[i]);
-    		} 
+    		if ( list != null ) {
+
+    			for ( File file_tmp : list ) {
+    				
+    				if( searched.equals(file_tmp.getName())) 
+    					return true;
+    				
+    				if ( file_tmp.isDirectory() ) 
+    					listDirectoryRec( file_tmp.getAbsolutePath() );							
+
+    			}
+
+    		}
     		
-    		return lista;
+    		return false;
     }
     
-    public static void walk( String path ) {
+    // List a directory recursively
+    public static void listDirectoryRec( String path ) {
 
-        File root = new File( path );
-        File[] list = root.listFiles();
-
-        if (list == null) return;
-
-        for ( File f : list ) {
-            if ( f.isDirectory() ) {
-                walk( f.getAbsolutePath() );
-                System.out.println( "Dir:" + f.getAbsoluteFile() );
+        File[] list = new File( path ).listFiles();
+        
+        if ( list != null ) {
+        		
+        		for ( File file_tmp : list ) {
+        			
+                if ( file_tmp.isDirectory() ) {
+                		listDirectoryRec( file_tmp.getAbsolutePath() );
+                		System.out.println( "Dir: " + file_tmp.getAbsoluteFile() );
+                }
+                else {
+                    	System.out.println( "File: " + file_tmp.getAbsoluteFile() );
+                }
+                
             }
-            else {
-                System.out.println( "File:" + f.getAbsoluteFile() );
-            }
+        		
         }
+        
     }
     
-    // Lanza el panel de seleccion de directorio
+    // Show JFileChooser to select a directory
     private static String getDirectory() {
     		 
-    		String ruta = null;
+    		String ruta = "";
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		Component comp = null;
 		int seleccion = fileChooser.showOpenDialog(comp);
 		
-		if (seleccion == JFileChooser.APPROVE_OPTION)
-		{
-			File fichero = fileChooser.getSelectedFile();
-			System.out.println(fichero.toString());
-			ruta = fichero.toString();
-			
-		}
+		switch( seleccion ) {
 		
+			case JFileChooser.APPROVE_OPTION:
+				
+				ruta = fileChooser.getSelectedFile().toString();
+			
+			break;
+			
+			case JFileChooser.CANCEL_OPTION:
+				
+				ruta = "No file selected";
+				
+			break;
+
+		}
+
 		return ruta;
 		
     }
